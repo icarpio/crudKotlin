@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "crud_kotlinDB.db"
+        private const val DATABASE_NAME = "table_test.db"
         private const val DATABASE_VERSION = 1
 
         // Tabla de usuarios
@@ -19,7 +19,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_PASSWORD = "password"
 
         // Tabla de personas
-        private const val TABLE_PERSONS = "customers"
+        private const val TABLE_CUSTOMERS = "customers"
         private const val COLUMN_PERSON_ID = "id"
         private const val COLUMN_NAME = "name"
         private const val COLUMN_AGE = "age"
@@ -36,21 +36,22 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             )
         """.trimIndent()
 
-        val createTablePersons = """
-            CREATE TABLE $TABLE_PERSONS (
+        val createTableCustomers = """
+            CREATE TABLE $TABLE_CUSTOMERS (
                 $COLUMN_PERSON_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_NAME TEXT,
-                $COLUMN_AGE INTEGER
+                $COLUMN_AGE INTEGER,
+                $COLUMN_MESSAGE TEXT
             )
         """.trimIndent()
 
         db?.execSQL(createTableUsers)
-        db?.execSQL(createTablePersons)
+        db?.execSQL(createTableCustomers)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_PERSONS")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_CUSTOMERS")
         onCreate(db)
     }
 
@@ -82,14 +83,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_AGE, age)
             put(COLUMN_MESSAGE, message)
         }
-        val result = db.insert(TABLE_PERSONS, null, contentValues)
+        val result = db.insert(TABLE_CUSTOMERS, null, contentValues)
         return result != -1L
     }
 
     // Obtener todos los customers
     fun getAllCustomers(): Cursor {
         val db = readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_PERSONS", null)
+        return db.rawQuery("SELECT * FROM $TABLE_CUSTOMERS", null)
     }
 
     // Actualizar customer
@@ -99,14 +100,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_NAME, name)
             put(COLUMN_AGE, age)
         }
-        val result = db.update(TABLE_PERSONS, contentValues, "$COLUMN_PERSON_ID = ?", arrayOf(id.toString()))
+        val result = db.update(TABLE_CUSTOMERS, contentValues, "$COLUMN_PERSON_ID = ?", arrayOf(id.toString()))
         return result > 0
     }
 
     // Eliminar customer
     fun deleteCustomer(id: Int): Boolean {
         val db = writableDatabase
-        val result = db.delete(TABLE_PERSONS, "$COLUMN_PERSON_ID = ?", arrayOf(id.toString()))
+        val result = db.delete(TABLE_CUSTOMERS, "$COLUMN_PERSON_ID = ?", arrayOf(id.toString()))
         return result > 0
     }
 }
